@@ -4,4 +4,10 @@ There will be a total of 200 scripts when this project directory is completed. F
 
 The scripts will be varried and once completed will be freely available on github.
 
-Total time to completion 
+Total time to completion 1 year.
+
+New files will come.
+
+Stand by.
+
+
