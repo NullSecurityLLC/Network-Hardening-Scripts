@@ -1,0 +1,46 @@
+import os
+import subprocess
+import sys
+
+def run_cmd(cmd, desc):
+    print(f"[+] {desc}...")
+    try:
+        subprocess.run(cmd, shell=True, check=True)
+        print("[✔] Done\n")
+    except subprocess.CalledProcessError:
+        print(f"[✘] Failed: {cmd}")
+        sys.exit(1)
+
+def disable_ip_forwarding():
+    run_cmd("sysctl -w net.ipv4.ip_forward=0", "Disabling IP forwarding")
+    run_cmd("echo 'net.ipv4.ip_forward = 0' >> /etc/sysctl.conf", "Persisting IP forwarding setting")
+
+def disable_icmp_echo():
+    run_cmd("echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all", "Disabling ICMP (ping) response")
+    run_cmd("echo 'net.ipv4.icmp_echo_ignore_all = 1' >> /etc/sysctl.conf", "Persisting ICMP setting")
+
+def setup_ufw():
+    run_cmd("ufw default deny incoming", "Setting default to deny incoming")
+    run_cmd("ufw default allow outgoing", "Setting default to allow outgoing")
+    run_cmd("ufw allow ssh", "Allowing SSH (port 22)")
+    run_cmd("ufw enable", "Enabling UFW firewall")
+
+def main():
+    if os.geteuid() != 0:
+        print("[-] This script must be run as root!")
+        sys.exit(1)
+
+    print("=== Simple Network Hardening Script ===\n")
+
+    disable_ip_forwarding()
+    disable_icmp_echo()
+    setup_ufw()
+
+    print("\n[+] Network hardening complete.")
+
+if __name__ == "__main__":
+    main()
+
+This script is in the early development stage (Alpha). It performs basic network hardening tasks but lacks thorough testing, error handling, configurability, and cross-platform support. Use only in controlled environments or labs. Expect bugs, dragons, and occasional chaos.
+
+
